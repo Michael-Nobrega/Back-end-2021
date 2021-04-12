@@ -287,7 +287,7 @@ function getBestGrade(array){
     return max;
 }
 
-var bestGrade = getBestGrade(studentsList)
-console.log()
-console.log('O melhor Aluno foi')
-console.log(bestGrade.getGrade());
+var bestGrade = getBestGrade(studentsList);
+console.log();
+console.log('O melhor Aluno foi');
+console.log(bestGrade);
