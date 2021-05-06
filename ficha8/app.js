@@ -126,12 +126,15 @@ app.post('/persons' , (request, response) => {
  *      produces:
  *          - application/json
  *      parameters:
- *             
- *      responses:
- *          200:
- *              description: An array of persons
+ *             - name: Model
+ *              description: Sample person
+ *              in: body
+ *              required: true
  *              schema:
  *                  $ref: '#/definitions/Person'
+ *      responses:
+ *          200:
+ *              description: Successfully created
  */
 
 app.delete('/persons:id', (request, response) => {
