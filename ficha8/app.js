@@ -1,6 +1,7 @@
 //importar o swaggerJsDoc e swaggerUi
 const swaggerJsDoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
+const swaggerDocument = require("./swagger.json");
 
 const swaggerOptions = {
     swaggerDefinition: {
@@ -14,7 +15,7 @@ const swaggerOptions = {
             servers: ["https://localhost:3000"]
         },
         definitions: {
-            "Person": {
+            "Persons": {
                 "type": "object",
                 "proprieties": {
                     "id": {
@@ -50,6 +51,7 @@ var mysql = require('mysql');
 
 //instanciar o express
 const app = express();
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 //swagger endpoint path
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
@@ -84,7 +86,7 @@ var dbConnection = mysql.createConnection({
  *          200:
  *              description: An array of persons
  *              schema:
- *                  $ref: '#/definitions/Person'
+ *                  $ref: '#/definitions/Persons'
  */
 
 app.get('/persons', (request, response) => {
@@ -93,16 +95,33 @@ app.get('/persons', (request, response) => {
             response.status(404);
             response.end(error.message)
           }
-        response.send(results);
-        if(results == 0){
-            response.status(404);
-            response,send("ID NOT FOUND");
-        }
-        else{
             response.send(results);
-        }
+
     });
 });
+
+
+/**
+ *  @swagger
+ * /persons:
+ *    post:
+ *      tags:
+ *        - Persons
+ *      summary: Creates and stores a person
+ *      description: Returns the ID of the created person
+ *      produces:
+ *          - application/json
+ *      parameters:
+ *             - name: Model
+ *               description: Sample person
+ *               in: body
+ *               required: true
+ *               schema:
+ *                  $ref: '#/definitions/Persons'
+ *      responses:
+ *          200:
+ *              description: An array of persons
+ */
 
 app.post('/persons' , (request, response) => {
     var details = request.body;
@@ -118,33 +137,80 @@ app.post('/persons' , (request, response) => {
 /**
  *  @swagger
  * /persons:
- *    post:
+ *    delete:
  *      tags:
  *        - Persons
- *      summary: Creates and stores a person
- *      description: Returns the ID of the created person
+ *      summary: Deletes a single a person by ID
+ *      description: Deletes a single person by ID
  *      produces:
  *          - application/json
  *      parameters:
- *             
+ *          - name: id
+ *            Description: Person's ID
+ *            in: body
+ *            required: true
+ *            type: string         
  *      responses:
  *          200:
- *              description: An array of persons
- *              schema:
- *                  $ref: '#/definitions/Person'
+ *              description: Sucessfully deleted
  */
 
-app.delete('/persons:id', (request, response) => {
-    var id = request.params.id;
+/**
+ *  @swagger
+ * /persons/{id}:
+ *    delete:
+ *      tags:
+ *        - Persons
+ *      summary: Deletes a single a person by ID
+ *      description: Deletes a single person by ID
+ *      produces:
+ *          - application/json
+ *      parameters:
+ *          - name: id
+ *            Description: Person's ID
+ *            in: path
+ *            required: true
+ *            type: string         
+ *      responses:
+ *          200:
+ *              description: Sucessfully deleted
+ */
 
-    dbConnection.query("Delete FROM persons WHERE ID" + id, (error, results, fields) => {
+app.delete('/persons/:id', (request, response) => {
+    var id = request.params.id;
+    dbConnection.query("Delete FROM persons WHERE ID=" + id, (error, results, fields) => {
         if (error) {
             response.status(404);
             response.end(error.message);
           }
-        response.send("Deleted " + results.affecterRows + " entry(s)");
+        response.send("Deleted " + results.affectedRows + " entry(s)");
     });
 });
+
+/**
+ *  @swagger
+ * /persons/{id}:
+ *    put:
+ *      tags:
+ *        - Persons
+ *      summary: Updates and stores a person
+ *      description: Returns the id of the updated person
+ *      produces:
+ *          - application/json
+ *      parameters:
+ *          - name: id
+ *            Description: Person's ID
+ *            in: path
+ *          - name: Model
+ *            description: Sample person
+ *            in: body
+ *            required: true
+ *            schema:
+ *              $ref: '#/definitions/Persons'
+ *      responses:
+ *          200:
+ *              description: Successfull
+ */
 
 
 //metodo que arranca o servidor http e fica a escuta

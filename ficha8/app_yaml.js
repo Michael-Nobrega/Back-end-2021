@@ -5,6 +5,9 @@ var mysql = require('mysql');
 
 //instanciar o express
 const app = express();
+const swaggerUi = require("swagger-ui-express");
+const swaggerDocument = require("./swagger.json");
+
 //definiar  a porta do servidor http
 const port = 3000;
 
@@ -16,12 +19,11 @@ var dbConnection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: '',
-    database: 'ficha7'
+    database: 'persons'
 })
 
-
+//get
 app.get('/persons', (request, response) => {
-
     dbConnection.query("SELECT * FROM persons", function (error, results, fields){
         if(error){
             response.status(404);
@@ -38,6 +40,7 @@ app.get('/persons', (request, response) => {
     });
 });
 
+//post
 app.post('/persons' , (request, response) => {
     var details = request.body;
     dbConnection.query('INSERT INTO persons set ?',[details], (error, results, fields) => {
@@ -49,6 +52,7 @@ app.post('/persons' , (request, response) => {
     });
 });
 
+//delete
 app.delete('/persons:id', (request, response) => {
     var id = request.params.id;
 
@@ -61,11 +65,10 @@ app.delete('/persons:id', (request, response) => {
     });
 });
 
+//swagger endpoint path
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 //metodo que arranca o servidor http e fica a escuta
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`);
 });
-
-
-
