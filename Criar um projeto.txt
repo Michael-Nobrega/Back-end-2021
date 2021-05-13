@@ -1,0 +1,8 @@
+1.Criar pasta
+2.Criar app.js
+3.fazer npm init no terminal
+4.Instalar dependencias (npm install mysql2, sequelize...)
+5.Fazer requier's (const express = require('express');)
+6. Criar servidor http node ./app.js
+
+https://editor.swagger.io/
